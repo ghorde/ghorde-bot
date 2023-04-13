@@ -5,10 +5,14 @@
   "repository": "git@github.com:sohamjaiswal/ghorde-bot.git",
   "author": "Soham Jaiswal <sohamjaiswal10@gmail.com>",
   "license": "MIT",
+  "scripts": {
+    "dev": "ts-node-dev ./src/main.ts"
+  },
   "dependencies": {
     "dotenv": "^16.0.3",
     "guilded.js": "^0.20.0",
     "ts-node": "^10.9.1",
+    "tsconfig-paths": "^4.2.0",
     "typescript": "^5.0.4"
   },
   "devDependencies": {
