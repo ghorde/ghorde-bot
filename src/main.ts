@@ -1,23 +1,51 @@
 import * as dotenv from 'dotenv'
-import { Client } from 'guilded.js'
+import { Client, Embed, Message } from 'guilded.js'
 import { startAxios } from './helpers'
 import { configureLogger } from './helpers/configure-logger'
 import pino, { LevelWithSilent } from 'pino'
+import { getServerPrefix } from './helpers/common/get-server-prefix'
+import { aliasUnique, commands, getCommandRouter } from './commands';
 
 dotenv.config()
 
 const TOKEN = process.env.GUILDED_TOKEN
+export const defaultPrefix = process.env.DEFAULT_PREFIX
 
-const axios = startAxios(process.env.API_LOC)
+const Axios = startAxios(process.env.API_LOC)
 export const mainLogger = configureLogger(pino, 'main', (process.env.LOGGER_LEVEL).toLowerCase() as LevelWithSilent)
 
 const client = new Client({token: TOKEN})
 
-client.on("ready", () => console.log(`Bot is successfully logged in`));
-client.on("messageCreated", (message) => {
-	mainLogger.info(`👂 Recieved message from guild: ${message.serverId}`)
-	if (message.content === "test") {
-			return message.reply("test indeed");
-	}
-});
-client.login();
+if (aliasUnique(commands)) {
+	mainLogger.info(`👌 All aliases are unique!`)
+	const commandRouter = getCommandRouter(commands)
+
+	client.on("ready", () => console.log(`Bot is successfully logged in`));
+
+	client.on("messageCreated", async(message: Message) => {
+		if(message.authorId == "dN6OpaGd") return; // ignore bot messages
+		const {serverId} = message
+		mainLogger.info(`👂 Recieved message from guild: ${serverId}`)
+		const prefix = await getServerPrefix(Axios, serverId)
+		if (message.content.startsWith(prefix)) {
+			mainLogger.info(`💻 Recieved command from guild: ${serverId}`)
+			const [command, ...args] = message.content.slice(prefix.length).trim().split(/ +/g).filter((word) => word.length > 0);
+			const commandFunction = commandRouter.get(command);
+			if (commandFunction) {
+				mainLogger.info(`📥 Executing command from guild: ${serverId}`)
+				const embed = await commandFunction(client, message, args, prefix);
+				return message.reply(embed);
+			} else {
+				mainLogger.info(`📥 Command not found from \nguild: ${serverId}\nuser: ${message.authorId}`)
+				return message.reply(new Embed({
+					title: `Command not found!`,
+					description: `Please use \`${prefix}help\` to see all available commands!`,
+					color: 0xff0000
+				}))
+			}
+		}
+	});
+	client.login();
+} else {
+	mainLogger.fatal(`🔥 Commands need to have unique aliases!`)
+}
