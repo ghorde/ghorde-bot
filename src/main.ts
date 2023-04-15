@@ -1,23 +1,23 @@
 import * as dotenv from 'dotenv'
 import { Client } from 'guilded.js'
-import {startAxios} from './helpers'
+import { startAxios } from './helpers'
+import { configureLogger } from './helpers/configure-logger'
+import pino, { LevelWithSilent } from 'pino'
 
 dotenv.config()
 
-const axios = startAxios(process.env.API_LOC)
-
 const TOKEN = process.env.GUILDED_TOKEN
 
-const guildedClient = new Client({token: TOKEN})
+const axios = startAxios(process.env.API_LOC)
+export const mainLogger = configureLogger(pino, 'main', (process.env.LOGGER_LEVEL).toLowerCase() as LevelWithSilent)
 
-guildedClient.on("ready", () => console.log(`Bot is successfully logged in`));
+const client = new Client({token: TOKEN})
 
-guildedClient.on("messageCreated", (message) => {
-	const serverId = message.serverId
-	
+client.on("ready", () => console.log(`Bot is successfully logged in`));
+client.on("messageCreated", (message) => {
+	mainLogger.info(`👂 Recieved message from guild: ${message.serverId}`)
 	if (message.content === "test") {
 			return message.reply("test indeed");
 	}
 });
-
-guildedClient.login();
+client.login();
