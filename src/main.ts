@@ -38,7 +38,7 @@ if (aliasUnique(commands)) {
 				return;
 			} else {
 				mainLogger.info(`📥 Command not found from \nguild: ${serverId}\nuser: ${message.authorId}`)
-				return message.reply(ErrorEmbed().setDescription(`Command not found!`))
+				return message.reply(ErrorEmbed(client, message).setDescription(`Command not found!`))
 			}
 		}
 	});
