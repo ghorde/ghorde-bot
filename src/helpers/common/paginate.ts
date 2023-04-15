@@ -1,4 +1,4 @@
-export const paginate = (items: any[], page = 1, page_size = 10) => {
+export const paginate = <T>(items: T[], page = 1, page_size = 10) => {
     const offset = (page - 1) * page_size;
     const paginatedItems = items.slice(offset).slice(0, page_size);
     const total_pages = Math.ceil(items.length / page_size);

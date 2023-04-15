@@ -5,6 +5,7 @@ import { configureLogger } from './helpers/configure-logger'
 import pino, { LevelWithSilent } from 'pino'
 import { getServerPrefix } from './helpers/common/get-server-prefix'
 import { aliasUnique, commands, getCommandRouter } from './commands';
+import { ErrorEmbed } from './helpers/embeds'
 
 dotenv.config()
 
@@ -34,14 +35,10 @@ if (aliasUnique(commands)) {
 			if (commandFunction) {
 				mainLogger.info(`📥 Executing command from guild: ${serverId}`)
 				const embed = await commandFunction(client, message, args, prefix);
-				return message.reply(embed);
+				return;
 			} else {
 				mainLogger.info(`📥 Command not found from \nguild: ${serverId}\nuser: ${message.authorId}`)
-				return message.reply(new Embed({
-					title: `Command not found!`,
-					description: `Please use \`${prefix}help\` to see all available commands!`,
-					color: 0xff0000
-				}))
+				return message.reply(ErrorEmbed.setDescription(`Command not found!`))
 			}
 		}
 	});
