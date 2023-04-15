@@ -27,19 +27,20 @@ export const categoryCommands: (commands: Record<string, ICommand>) => Record<st
     return categoryCommands;
 }
 
-export const helpCommand = new CommandGeneric('help', ['h'], 'Shows commands', 'help *<int page>*', 'general', (client, message, args) => {
+export const help = new CommandGeneric('help', ['h'], 'Shows commands', 'help *<int page>*', 'general', async (client, message, args) => {
     if (parseInt(args[0])) {
-        const commandsPage = paginate<Omit<ICommand, 'run'>>(commandsList(commands), parseInt(args[0]));
+        const commandsPage = paginate<Omit<ICommand, 'run'>>(commandsList(commands), 10, parseInt(args[0]));
         if (commandsPage) {
-            message.reply(SuccessEmbed.setFooter(`Viewing ${commandsPage.page}/${commandsPage.total_pages}`).setTitle("Help").addFields(commandsPage.data.map(command => {
+            await message.reply(SuccessEmbed().setTitle("📜 Help").addFields(commandsPage.map(command => {
                 return {
                     name: `${command.commandName} - ${command.category}`,
-                    value: `Aliases: ${command.aliases.join(', ')}\nDescription: ${command.description}\nUsage: ${command.usage}`
+                    value: `Aliases: ${command.aliases.join(', ')}\nDescription: ${command.description}\nUsage: ${command.usage}`,
+                    inline: true
                 }
             })));
             return;
         }
     }
-    message.reply(ErrorEmbed.setDescription("Provide Page Number"))
+    await message.reply(ErrorEmbed().setDescription("Provide Page Number"))
     return;
 });

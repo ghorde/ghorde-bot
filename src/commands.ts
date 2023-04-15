@@ -1,8 +1,9 @@
 import { ICommand, botCommand } from "./factories/command/command.factory.types"
 import { ping } from './commands/ping.command';
-import { helpCommand } from './commands/help.command';
+import { help } from './commands/help.command';
+import { prefix } from "./commands/prefix.command";
 
-export const commands: Record<string, ICommand> = {ping, helpCommand}
+export const commands: Record<string, ICommand> = {ping, help, prefix}
 
 export const aliasUnique = (commands: Record<string, ICommand>): boolean => {
     const aliases = Object.values(commands).map(command => command.aliases).flat();
@@ -16,6 +17,7 @@ export const getCommandRouter: (commands: Record<string, ICommand>) => Map<strin
         command.aliases.forEach(alias => {
             commandRouter.set(alias, command.run);
         })
+        commandRouter.set(commandName, command.run);
     })
     return commandRouter;
 }

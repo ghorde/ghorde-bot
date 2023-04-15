@@ -12,7 +12,7 @@ dotenv.config()
 const TOKEN = process.env.GUILDED_TOKEN
 export const defaultPrefix = process.env.DEFAULT_PREFIX
 
-const Axios = startAxios(process.env.API_LOC)
+export const axios = startAxios(process.env.API_LOC)
 export const mainLogger = configureLogger(pino, 'main', (process.env.LOGGER_LEVEL).toLowerCase() as LevelWithSilent)
 
 const client = new Client({token: TOKEN})
@@ -27,7 +27,7 @@ if (aliasUnique(commands)) {
 		if(message.authorId == "dN6OpaGd") return; // ignore bot messages
 		const {serverId} = message
 		mainLogger.info(`👂 Recieved message from guild: ${serverId}`)
-		const prefix = await getServerPrefix(Axios, serverId)
+		const prefix = await getServerPrefix(axios, serverId)
 		if (message.content.startsWith(prefix)) {
 			mainLogger.info(`💻 Recieved command from guild: ${serverId}`)
 			const [command, ...args] = message.content.slice(prefix.length).trim().split(/ +/g).filter((word) => word.length > 0);
@@ -38,7 +38,7 @@ if (aliasUnique(commands)) {
 				return;
 			} else {
 				mainLogger.info(`📥 Command not found from \nguild: ${serverId}\nuser: ${message.authorId}`)
-				return message.reply(ErrorEmbed.setDescription(`Command not found!`))
+				return message.reply(ErrorEmbed().setDescription(`Command not found!`))
 			}
 		}
 	});
