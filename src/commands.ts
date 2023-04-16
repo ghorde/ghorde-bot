@@ -3,8 +3,9 @@ import { ping } from './commands/ping.command';
 import { help } from './commands/help.command';
 import { prefix } from "./commands/prefix.command";
 import { randomImage } from './commands/randomImage.command';
+import { waifu } from './commands/waifu.command';
 
-export const commands: Record<string, ICommand> = {ping, help, prefix, randomImage}
+export const commands: Record<string, ICommand> = {ping, help, prefix, randomImage, waifu}
 
 export const aliasUnique = (commands: Record<string, ICommand>): boolean => {
     const aliases = Object.values(commands).map(command => command.aliases).flat();

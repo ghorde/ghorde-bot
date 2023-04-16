@@ -13,8 +13,7 @@ export const randomImage = new CommandGeneric('randomImage', ['rimg', 'ri'], 'Se
             if (res) {
                 if (res.data.success) {
                     let data = res.data
-                    mainLogger.info(data)
-                    await message.reply(SuccessEmbed(client, message).setTitle("🖼 Your Image").setDescription(`Image id: ${data.data[0].id}`).setImage(data.data[0].imgLink));
+                    await message.reply(SuccessEmbed(client, message).setTitle("📷 Your Image").setDescription(`Image id: ${data.data[0].id}`).setImage(data.data[0].imgLink));
                     return
                 }
                 await message.reply(ErrorEmbed(client, message).setDescription('Remote API Error! Please try again later!'));

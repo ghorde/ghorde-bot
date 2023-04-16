@@ -7,6 +7,7 @@ import { getServerPrefix } from './helpers/common/get-server-prefix'
 import { aliasUnique, commands, getCommandRouter } from './commands';
 import { ErrorEmbed } from './helpers/embeds'
 import { BotRateLimiter, UserRateLimiter } from './helpers/common/timeout-manager'
+import enforceRatelimits from './helpers/enforce-ratelimits'
 
 dotenv.config()
 
@@ -18,8 +19,7 @@ export const mainLogger = configureLogger(pino, 'main', (process.env.LOGGER_LEVE
 
 export const UserRate = new UserRateLimiter()
 export const BotRates = new BotRateLimiter()
-BotRates.addRateLimit('unsplash', 1000)
-UserRate.addRateLimit('unsplash', 10000)
+enforceRatelimits()
 
 const client = new Client({token: TOKEN})
 
