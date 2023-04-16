@@ -4,6 +4,7 @@ import { ICommand, botCommand } from "../factories/command/command.factory.types
 import {commands} from '../commands';
 import { paginate } from '../helpers/common/paginate';
 import { ErrorEmbed, SuccessEmbed } from "../helpers/embeds";
+import { prefix } from './prefix.command';
 
 export const commandsList: (commands: Record<string, ICommand>) => {commandName: string, aliases: string[], description: string, usage: string, category: string}[] = (commands) => {
     return Object.entries(commands).map(([_, command]) => {
@@ -27,14 +28,14 @@ export const categoryCommands: (commands: Record<string, ICommand>) => Record<st
     return categoryCommands;
 }
 
-export const help = new CommandGeneric('help', ['h'], 'Shows commands', 'help *<int page>*', 'general', (client, message, args) => {
+export const help = new CommandGeneric('help', ['h'], 'Shows commands', 'help *<int page>*', 'general', (client, message, args, prefix) => {
     if (parseInt(args[0])) {
         const commandsPage = paginate<Omit<ICommand, 'run'>>(commandsList(commands), parseInt(args[0]));
         if (commandsPage) {
             message.reply(SuccessEmbed(client, message).setFooter(`Viewing ${commandsPage.page}/${commandsPage.total_pages}`).setTitle("Help").addFields(commandsPage.data.map(command => {
                 return {
                     name: `${command.commandName} - ${command.category}`,
-                    value: `Aliases: ${command.aliases.join(', ')}\nDescription: ${command.description}\nUsage: ${command.usage}`,
+                    value: `Aliases: ${command.aliases.join(', ')}\nDescription: ${command.description}\nUsage: ${prefix}${command.usage}`,
                     inline: true
                 }
             })));
