@@ -1,0 +1,1 @@
+export {diffusion} from './diffusion.command';
