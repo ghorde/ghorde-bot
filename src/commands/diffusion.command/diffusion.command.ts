@@ -41,6 +41,7 @@ export const diffusion = new CommandGeneric('diffusion', ['diff', 'd'], 'Uses st
             if (!faulted) {
                 if (is_possible) {
                     await new Promise(resolve => setTimeout(resolve, 2000));
+                    update+=1;
                     finished = newFinished;
                 } else {
                     await diffMessage.edit(ErrorEmbed(client, message).setTitle('🎨 Diffusion!').setDescription(`Request failed! Reason: Not Possible`))
