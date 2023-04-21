@@ -19,12 +19,13 @@ export const diffusion = new CommandGeneric('diffusion', ['diff', 'd'], 'Uses st
         const id = putReq.data.id
         let getReq = await axios.get(`sh/check/${id}`)
         let {finished} = getReq.data
+        let update = 0;
         while (!finished) {
             const getReq = await axios.get(`sh/check/${id}`)
             const {processing, restarted, waiting, done, faulted, wait_time, queue_position, kudos, is_possible} = getReq.data
             const newFinished = getReq.data.finished
             const response = WarningEmbed(client, message).setTitle('🎨 Diffusion!')
-            response.setDescription(`Request recieved! Refreshing every 2 seconds.`)
+            response.setDescription(`Request recieved! Refreshing every 2 seconds.\n***Update:${update}***`)
             response.addField('Finished', finished, true)
             response.addField('Processing', processing, true)
             response.addField('Restarted', restarted, true)
