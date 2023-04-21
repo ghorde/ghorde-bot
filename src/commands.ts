@@ -6,6 +6,7 @@ import { randomImage } from './commands/randomImage.command';
 import { waifu } from './commands/waifu.command';
 import { edit } from "./commands/edit.command";
 import { diffusion } from './commands/diffusion.command';
+import { Command } from "commander";
 
 export const commands: Record<string, ICommand> = {ping, help, prefix, randomImage, waifu, edit, diffusion}
 
@@ -25,3 +26,5 @@ export const getCommandRouter: (commands: Record<string, ICommand>) => Map<strin
     })
     return commandRouter;
 }
+
+export const commander = new Command();

@@ -18,7 +18,7 @@ export const getServerPrefix: (axios: Axios, id: string) => Promise<string> = as
                 mainLogger.info(`Created new server prefix! ${data.prefix}`)
             }
         }
-       return data.data.prefix
+        return data.data.prefix
     }
     return '!'
 }

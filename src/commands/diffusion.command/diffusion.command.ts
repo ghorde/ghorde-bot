@@ -2,11 +2,32 @@ import { axios, mainLogger } from '../../main';
 import { CommandGeneric } from '../../factories/command/command.factory';
 import { ErrorEmbed, SuccessEmbed, WarningEmbed } from '../../helpers/embeds';
 import { AxiosResponse } from 'axios';
+import { getFlags, removeFlags } from 'helpers/common/flag-detector';
 
 export const diffusion = new CommandGeneric('diffusion', ['diff', 'd'], 'Uses stable horde to generate ai art!', 'diff <prompt>', 'DIFFUSION', async(client, message, args) => {
-    const response = SuccessEmbed(client, message).setTitle('🎨 Diffusion!').setDescription(`Request recieved!`);
+    let response = SuccessEmbed(client, message).setTitle('🎨 Diffusion!').setDescription(`Request recieved!`);
+    const {model} = getFlags(args.join(' '))
+    const prompt = removeFlags(args.join(' '))
+    const availableModels = await axios.get('sh/models').catch((err) => {
+        mainLogger.error(err)
+        const response = ErrorEmbed(client, message).setTitle('🎨 Diffusion!').setDescription(`Request failed!`);
+        message.reply(response)
+        return
+    })
+    if (!availableModels) {
+        return
+    }
+    const availableModelNames = availableModels.data.map((model: any) => model.name)
+    mainLogger.info(model)
+    if (model) {
+        if (!availableModelNames.includes(model)) {
+            const response = ErrorEmbed(client, message).setTitle('🎨 Diffusion!').setDescription(`Model not found!`);
+            message.reply(response)
+            return
+        }
+    }
     const diffMessage = await message.reply(response)
-    const putReq: false | AxiosResponse<any, any> = await axios.post('sh/generate', {prompt: args.join(' ')}).catch((err) => {
+    const putReq: false | AxiosResponse<any, any> = await axios.post('sh/generate', {prompt, model}).catch((err) => {
         mainLogger.error(err)
         const response = ErrorEmbed(client, message).setTitle('🎨 Diffusion!').setDescription(`Request failed!`);
         diffMessage.edit(response)
