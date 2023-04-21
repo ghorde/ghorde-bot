@@ -30,7 +30,7 @@ export const categoryCommands: (commands: Record<string, ICommand>) => Record<st
 
 export const help = new CommandGeneric('help', ['h'], 'Shows commands', 'help *<int page>*', 'general', (client, message, args, prefix) => {
     if (parseInt(args[0])) {
-        const commandsPage = paginate<Omit<ICommand, 'run'>>(commandsList(commands), parseInt(args[0]));
+        const commandsPage = paginate<Omit<ICommand, 'run'>>(commandsList(commands), parseInt(args[0]), 5);
         if (commandsPage) {
             message.reply(SuccessEmbed(client, message).setFooter(`Viewing ${commandsPage.page}/${commandsPage.total_pages}`).setTitle("Help").addFields(commandsPage.data.map(command => {
                 return {

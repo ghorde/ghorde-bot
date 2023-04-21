@@ -6,9 +6,9 @@ import { randomImage } from './commands/randomImage.command';
 import { waifu } from './commands/waifu.command';
 import { edit } from "./commands/edit.command";
 import { diffusion } from './commands/diffusion.command';
-import { Command } from "commander";
+import { listModels } from './commands/diffusion.command/list-models.command';
 
-export const commands: Record<string, ICommand> = {ping, help, prefix, randomImage, waifu, edit, diffusion}
+export const commands: Record<string, ICommand> = {ping, help, prefix, randomImage, waifu, edit, diffusion, listModels}
 
 export const aliasUnique = (commands: Record<string, ICommand>): boolean => {
     const aliases = Object.values(commands).map(command => command.aliases).flat();
@@ -26,5 +26,3 @@ export const getCommandRouter: (commands: Record<string, ICommand>) => Map<strin
     })
     return commandRouter;
 }
-
-export const commander = new Command();
