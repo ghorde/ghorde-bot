@@ -21,6 +21,9 @@ export const UserRate = new UserRateLimiter()
 export const BotRates = new BotRateLimiter()
 enforceRatelimits()
 
+//temp server whitelist 
+const whitelist = ["YEYVOkGj", "wReb5DPl"]
+
 const client = new Client({token: TOKEN})
 
 if (aliasUnique(commands)) {
@@ -29,7 +32,11 @@ if (aliasUnique(commands)) {
 
 	client.on("ready", () => console.log(`Bot is successfully logged in`));
 
-	client.on("messageCreated", async(message: Message) => {
+	client.on("messageCreated", async (message: Message) => {
+		if (!whitelist.includes(message.serverId)) {
+			message.reply(ErrorEmbed(client, message).setTitle("Closed Alpha Reject!").setDescription(`This server is not whitelisted!`).setFooter(`If you would like to be whitelisted, please contact the bot owner.`))
+			return
+		}; // temp server whitelist (remove when out of alpha)
 		if(message.authorId == "dN6OpaGd") return; // ignore self message
 		const {serverId} = message
 		mainLogger.info(`👂 Recieved message from guild: ${serverId}`)
