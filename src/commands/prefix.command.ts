@@ -5,7 +5,7 @@ import { axios, mainLogger } from '../main';
 import { getServerPrefix } from '../helpers/common/get-server-prefix';
 
 export const prefix = new CommandGeneric('prefix', ['pre'], 'Sets the prefix!', 'prefix <prefix>', 'settings', async(client, message, args) => {
-    const isOwner = checkOwner(message, client);
+    const isOwner = await checkOwner(message, client);
     if (!isOwner) {
         await message.reply(ErrorEmbed(client, message).setDescription('You are not the owner of this server\nOnly the owner can change the prefix!'));
         return;
