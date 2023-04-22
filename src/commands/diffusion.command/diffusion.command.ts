@@ -67,7 +67,7 @@ export const diffusion = new CommandGeneric('diffusion', ['diff', 'd'], 'Uses st
             const {processing, restarted, waiting, done, faulted, wait_time, queue_position, kudos, is_possible} = getReq.data
             const newFinished = getReq.data.finished
             const response = WarningEmbed(client, message).setTitle('🎨 Diffusion!')
-            response.setDescription(`Request recieved! Refreshing every 2 seconds.\n***Update:${update}***`)
+            response.setDescription(`Request recieved! Refreshing every 2 seconds.\n***Update:${update}***\n(if this pauses, the command is broken.. devs are finding a fix)`)
             response.addField('Finished', finished, true)
             response.addField('Processing', processing, true)
             response.addField('Restarted', restarted, true)
