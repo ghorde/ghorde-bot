@@ -2,7 +2,7 @@ import { axios, mainLogger } from '../../main';
 import { CommandGeneric } from '../../factories/command/command.factory';
 import { ErrorEmbed, SuccessEmbed, WarningEmbed } from '../../helpers/embeds';
 import { AxiosResponse } from 'axios';
-import { getFlags, removeFlags } from 'helpers/common/flag-detector';
+import { getFlags, removeFlags } from '../../helpers/common/flag-detector';
 
 export const diffusion = new CommandGeneric('diffusion', ['diff', 'd'], 'Uses stable horde to generate ai art!', 'diff <prompt>', 'DIFFUSION', async(client, message, args) => {
     let response = SuccessEmbed(client, message).setTitle('🎨 Diffusion!').setDescription(`Request recieved!`);
@@ -17,11 +17,11 @@ export const diffusion = new CommandGeneric('diffusion', ['diff', 'd'], 'Uses st
     if (!availableModels) {
         return
     }
-    const availableModelNames = availableModels.data.map((model: any) => model.name)
-    mainLogger.info(model)
+    const availableModelNames = await availableModels.data.map((model: any) => model.name)
+    mainLogger.info([model,availableModelNames])
     if (model) {
         if (!availableModelNames.includes(model)) {
-            const response = ErrorEmbed(client, message).setTitle('🎨 Diffusion!').setDescription(`Model not found!`);
+            const response = ErrorEmbed(client, message).setTitle('🎨 Diffusion!').setDescription(`Model not found!\nHint: Use \`lm\` to get a list of available models!\nHint: Use \`ms\` to get stats of a model!\nHint: Use single quotes to pass in flags!`);
             message.reply(response)
             return
         }
@@ -42,7 +42,28 @@ export const diffusion = new CommandGeneric('diffusion', ['diff', 'd'], 'Uses st
         let {finished} = getReq.data
         let update = 0;
         while (!finished) {
-            const getReq = await axios.get(`sh/check/${id}`)
+            let checkStatusHelper = 0;
+            const checkStatus: () => Promise<AxiosResponse<any, any>> = async () => {
+                const getReq = await axios.get(`sh/check/${id}`).catch(async (e) => {
+                    const thisIter = checkStatusHelper
+                    checkStatusHelper += 1;
+                    if (checkStatusHelper < 5) { 
+                        mainLogger.error(`❌ Check Request Failed, Retrying, Recursion is not good D: ${e}`)
+                        const res = await checkStatus()
+                        return res
+                    } else {
+                        mainLogger.error(`❌ Request ultimately failed, sending error! ${e}`)
+                        const response = ErrorEmbed(client, message).setTitle('🎨 Diffusion!').setDescription(`Request failed!`);
+                        diffMessage.edit(response)
+                        throw new Error(`❌ Request ultimately failed, throwing error! ${e}`)
+                    }
+                })
+                return getReq
+            }
+            const getReq = await checkStatus()
+            if (!getReq) {
+                return
+            }
             const {processing, restarted, waiting, done, faulted, wait_time, queue_position, kudos, is_possible} = getReq.data
             const newFinished = getReq.data.finished
             const response = WarningEmbed(client, message).setTitle('🎨 Diffusion!')

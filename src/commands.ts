@@ -7,8 +7,9 @@ import { waifu } from './commands/waifu.command';
 import { edit } from "./commands/edit.command";
 import { diffusion } from './commands/diffusion.command';
 import { listModels } from './commands/diffusion.command/list-models.command';
+import { modelStats } from './commands/diffusion.command/model-stats.command';
 
-export const commands: Record<string, ICommand> = {ping, help, prefix, randomImage, waifu, edit, diffusion, listModels}
+export const commands: Record<string, ICommand> = {ping, help, prefix, randomImage, waifu, edit, diffusion, listModels, modelStats}
 
 export const aliasUnique = (commands: Record<string, ICommand>): boolean => {
     const aliases = Object.values(commands).map(command => command.aliases).flat();

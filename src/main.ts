@@ -30,7 +30,7 @@ if (aliasUnique(commands)) {
 	client.on("ready", () => console.log(`Bot is successfully logged in`));
 
 	client.on("messageCreated", async(message: Message) => {
-		if(message.authorId == "dN6OpaGd") return; // ignore bot messages
+		if(message.authorId == "dN6OpaGd") return; // ignore self message
 		const {serverId} = message
 		mainLogger.info(`👂 Recieved message from guild: ${serverId}`)
 		const prefix = await getServerPrefix(axios, serverId)
