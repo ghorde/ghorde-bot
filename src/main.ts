@@ -33,15 +33,15 @@ if (aliasUnique(commands)) {
 	client.on("ready", () => console.log(`Bot is successfully logged in`));
 
 	client.on("messageCreated", async (message: Message) => {
-		if (!whitelist.includes(message.serverId)) {
-			message.reply(ErrorEmbed(client, message).setTitle("Closed Alpha Reject!").setDescription(`This server is not whitelisted!`).setFooter(`If you would like to be whitelisted, please contact the bot owner.`))
-			return
-		}; // temp server whitelist (remove when out of alpha)
 		if(message.authorId == "dN6OpaGd") return; // ignore self message
 		const {serverId} = message
 		mainLogger.info(`👂 Recieved message from guild: ${serverId}`)
 		const prefix = await getServerPrefix(axios, serverId)
 		if (message.content.startsWith(prefix)) {
+			if (!whitelist.includes(message.serverId)) {
+				message.reply(ErrorEmbed(client, message).setTitle("Closed Alpha Reject!").setDescription(`This server is not whitelisted!\nIf you would like to be whitelisted, please contact the bot owner.`))
+				return
+			}; // temp server whitelist (remove when out of alpha)
 			mainLogger.info(`💻 Recieved command from guild: ${serverId}`)
 			const [command, ...args] = message.content.slice(prefix.length).trim().split(/ +/g).filter((word) => word.length > 0);
 			const commandFunction = commandRouter.get(command);
