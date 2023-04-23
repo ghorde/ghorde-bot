@@ -22,7 +22,7 @@ export const BotRates = new BotRateLimiter()
 enforceRatelimits()
 
 //temp server whitelist 
-const whitelist = ["YEYVOkGj", "wReb5DPl"]
+const whitelist = ["YEYVOkGj", "wReb5DPl", "ARmn48Jl"]
 
 const client = new Client({token: TOKEN})
 
