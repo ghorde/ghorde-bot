@@ -39,10 +39,12 @@ export const diffusion = new CommandGeneric('diffusion', ['diff', 'd'], 'Uses st
     (async () => {if (putReq.data.id) {
         const id = putReq.data.id
         let getReq = await axios.get(`sh/check/${id}`)
+        mainLogger.info(getReq.data)
         let {finished} = getReq.data
         let update = 0;
         while (!finished) {
             const getReq = await axios.get(`sh/check/${id}`)
+            mainLogger.info(getReq.data)
             const {processing, restarted, waiting, done, faulted, wait_time, queue_position, kudos, is_possible} = getReq.data
             const newFinished = getReq.data.finished
             const response = WarningEmbed(client, message).setTitle('🎨 Diffusion!')
