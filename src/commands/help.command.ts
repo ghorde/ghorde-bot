@@ -9,9 +9,7 @@ import { paginate } from "../helpers/common/paginate";
 import { ErrorEmbed, SuccessEmbed } from "../helpers/embeds";
 import { prefix } from "./prefix.command";
 
-export const commandsList: (
-  commands: Record<string, ICommand>
-) => {
+export const commandsList: (commands: Record<string, ICommand>) => {
   commandName: string;
   aliases: string[];
   description: string;
@@ -29,9 +27,7 @@ export const commandsList: (
   });
 };
 
-export const categoryCommands: (
-  commands: Record<string, ICommand>
-) => Record<
+export const categoryCommands: (commands: Record<string, ICommand>) => Record<
   string,
   {
     commandName: string;
