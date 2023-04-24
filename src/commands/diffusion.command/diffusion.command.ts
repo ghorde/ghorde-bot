@@ -115,7 +115,7 @@ export const diffusion = new CommandGeneric(
             "🎨 Diffusion!"
           );
           response.setDescription(
-            `Request recieved! Refreshing every 2 seconds.\n***Update:${update}***\n(if this pauses, the command is broken.. devs are finding a fix)`
+            `Request recieved! Refreshing every 10 seconds.\n***Update:${update}***\n(if this pauses, the command is broken.. devs are finding a fix)`
           );
           response.addField("Finished", finished, true);
           response.addField("Processing", processing, true);
@@ -131,7 +131,7 @@ export const diffusion = new CommandGeneric(
           finished = newFinished;
           if (!faulted) {
             if (is_possible) {
-              await new Promise((resolve) => setTimeout(resolve, 2000));
+              await new Promise((resolve) => setTimeout(resolve, 10000));
               update += 1;
               finished = newFinished;
             } else {
