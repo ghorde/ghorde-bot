@@ -14,7 +14,7 @@ export const diffusion = new CommandGeneric(
     let response = SuccessEmbed(client, message)
       .setTitle("🎨 Diffusion!")
       .setDescription(`Request recieved!`);
-    const { model, token } = getFlags(args.join(" "));
+    const { model, token, height, width } = getFlags(args.join(" "));
     mainLogger.info([model, token]);
     const prompt = removeFlags(args.join(" "));
     const availableModels = await axios.get("sh/models").catch((err) => {
@@ -45,7 +45,7 @@ export const diffusion = new CommandGeneric(
     }
     const diffMessage = await message.reply(response);
     const putReq: false | AxiosResponse<any, any> = await axios
-      .post("sh/generate", { prompt, model, token })
+      .post("sh/generate", { prompt, model, token, height, width })
       .catch((err) => {
         mainLogger.error(err);
         const response = ErrorEmbed(client, message)
