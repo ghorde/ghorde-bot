@@ -2,7 +2,7 @@ import { axios, mainLogger } from "../../main";
 import { CommandGeneric } from "../../factories/command/command.factory";
 import { ErrorEmbed, SuccessEmbed, WarningEmbed } from "../../helpers/embeds";
 import { AxiosResponse } from "axios";
-import { getFlags, removeFlags } from "../../helpers/common/flag-detector";
+import { getArgs, removeArgs, removeFlags, parseFlags } from "../../helpers/common/flag-detector";
 
 export const diffusion = new CommandGeneric(
   "diffusion",
@@ -14,9 +14,11 @@ export const diffusion = new CommandGeneric(
     let response = SuccessEmbed(client, message)
       .setTitle("🎨 Diffusion!")
       .setDescription(`Request recieved!`);
-    const { model, token, height, width } = getFlags(args.join(" "));
+    const { model, token, height, width } = getArgs(args.join(" "));
+    const {karras} = parseFlags(args.join(" "));
     mainLogger.info([model, token]);
-    const prompt = removeFlags(args.join(" "));
+    let prompt = removeArgs(args.join(" "));
+    prompt = removeFlags(prompt);
     const availableModels = await axios.get("sh/models").catch((err) => {
       mainLogger.error(err);
       const response = ErrorEmbed(client, message)
@@ -45,7 +47,7 @@ export const diffusion = new CommandGeneric(
     }
     const diffMessage = await message.reply(response);
     const putReq: false | AxiosResponse<any, any> = await axios
-      .post("sh/generate", { prompt, model, token, height, width })
+      .post("sh/generate", { prompt, model, token, height, width, karras })
       .catch((err) => {
         mainLogger.error(err);
         const response = ErrorEmbed(client, message)
