@@ -24,7 +24,9 @@ export const listModels = new CommandGeneric(
         mainLogger.error(err);
         const response = ErrorEmbed(client, message)
           .setTitle("🎨 Diffusion!")
-          .setDescription(`Unable to get list of models ;-;\nYou can also check out the web client for this!\nClick [here](https://ghorde.kodski.com/models) to visit the web client!`);
+          .setDescription(
+            `Unable to get list of models ;-;\nYou can also check out the web client for this!\nClick [here](https://ghorde.kodski.com/models) to visit the web client!`
+          );
         message.reply(response);
         return;
       });
@@ -39,7 +41,9 @@ export const listModels = new CommandGeneric(
       if (commandsPage) {
         message.reply(
           SuccessEmbed(client, message)
-            .setDescription("You can also check out the web client for this!\nClick [here](https://ghorde.kodski.com/models) to visit the web client!")
+            .setDescription(
+              "You can also check out the web client for this!\nClick [here](https://ghorde.kodski.com/models) to visit the web client!"
+            )
             .setFooter(
               `Viewing ${commandsPage.page}/${commandsPage.total_pages}`
             )
@@ -58,7 +62,9 @@ export const listModels = new CommandGeneric(
       }
     }
     message.reply(
-      ErrorEmbed(client, message).setDescription("Provide Page Number\nYou can also check out the web client for this!\nClick [here](https://ghorde.kodski.com/models) to visit the web client!")
+      ErrorEmbed(client, message).setDescription(
+        "Provide Page Number\nYou can also check out the web client for this!\nClick [here](https://ghorde.kodski.com/models) to visit the web client!"
+      )
     );
     return;
   }

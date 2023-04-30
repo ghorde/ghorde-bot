@@ -61,7 +61,7 @@ export const diffusion = new CommandGeneric(
       if (putReq.data.id) {
         const id = putReq.data.id;
         let getReq = await axios.get(`sh/check/${id}`);
-        mainLogger.info(getReq)
+        mainLogger.info(getReq);
         let { finished } = getReq.data;
         let update = 0;
         while (!finished) {
@@ -93,7 +93,7 @@ export const diffusion = new CommandGeneric(
                   );
                 }
               });
-            mainLogger.info(getReq)
+            mainLogger.info(getReq);
             return getReq;
           };
           const getReq = await checkStatus();
