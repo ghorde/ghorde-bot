@@ -3,6 +3,7 @@ import { CommandGeneric } from "../../factories/command/command.factory";
 import { ErrorEmbed, SuccessEmbed, WarningEmbed } from "../../helpers/embeds";
 import { AxiosResponse } from "axios";
 import { getArgs, removeArgs, removeFlags, parseFlags } from "../../helpers/common/flag-detector";
+import { Embed, Message } from "guilded.js";
 
 export const diffusion = new CommandGeneric(
   "diffusion",
@@ -15,8 +16,7 @@ export const diffusion = new CommandGeneric(
       .setTitle("🎨 Diffusion!")
       .setDescription(`Request recieved!`);
     const { model, token, height, width } = getArgs(args.join(" "));
-    const {karras} = parseFlags(args.join(" "));
-    mainLogger.info([model, token]);
+    const { karras } = parseFlags(args.join(" "));
     let prompt = removeArgs(args.join(" "));
     prompt = removeFlags(prompt);
     const availableModels = await axios.get("sh/models").catch((err) => {
@@ -47,7 +47,7 @@ export const diffusion = new CommandGeneric(
     }
     const diffMessage = await message.reply(response);
     const putReq: false | AxiosResponse<any, any> = await axios
-      .post("sh/generate", { prompt, model, token, height, width, karras })
+      .post("sh/generate", { prompt, model, token, height, width, karras, guildedId: message.author.id })
       .catch((err) => {
         mainLogger.error(err);
         const response = ErrorEmbed(client, message)
@@ -59,11 +59,21 @@ export const diffusion = new CommandGeneric(
     if (!putReq) {
       return;
     }
+    const forceEditMessage = async (message: Message, embed: Embed, count: number = 1) => {
+      if (count <= 5) {
+        await message.edit(embed).catch((err) => {
+          mainLogger.warn(err);
+          count += 1;
+          forceEditMessage(message, embed, count);
+        });
+      }
+      return;
+    }
     (async () => {
       if (putReq.data.id) {
+        console.log(putReq.data)
         const id = putReq.data.id;
         let getReq = await axios.get(`sh/check/${id}`);
-        mainLogger.info(getReq);
         let { finished } = getReq.data;
         let update = 0;
         while (!finished) {
@@ -74,7 +84,6 @@ export const diffusion = new CommandGeneric(
             const getReq = await axios
               .get(`sh/check/${id}`)
               .catch(async (e) => {
-                const thisIter = checkStatusHelper;
                 checkStatusHelper += 1;
                 if (checkStatusHelper < 5) {
                   mainLogger.error(
@@ -89,13 +98,12 @@ export const diffusion = new CommandGeneric(
                   const response = ErrorEmbed(client, message)
                     .setTitle("🎨 Diffusion!")
                     .setDescription(`Request failed!`);
-                  diffMessage.edit(response);
+                  forceEditMessage(diffMessage, response);
                   throw new Error(
                     `❌ Request ultimately failed, throwing error! ${e}`
                   );
                 }
               });
-            mainLogger.info(getReq);
             return getReq;
           };
           const getReq = await checkStatus();
@@ -120,6 +128,8 @@ export const diffusion = new CommandGeneric(
           response.setDescription(
             `Request recieved! Refreshing every 5 seconds.\n***Update:${update}***\n(if this pauses, the command is broken.. devs are finding a fix)`
           );
+          response.addField("Custom Token", putReq.data.token ? "Yes" : "No", true);
+          response.addField("Model", putReq.data.model ? putReq.data.model : "unknown", true);
           response.addField("Finished", finished, true);
           response.addField("Processing", processing, true);
           response.addField("Restarted", restarted, true);
@@ -130,7 +140,8 @@ export const diffusion = new CommandGeneric(
           response.addField("Queue Position", queue_position, true);
           response.addField("Kudos", kudos, true);
           response.addField("Is Possible", is_possible, true);
-          await diffMessage.edit(response);
+          response.addField("Prompt", putReq.data.prompt ? putReq.data.prompt : "unknown", true);
+          await forceEditMessage(diffMessage, response);
           finished = newFinished;
           if (!faulted) {
             if (is_possible) {
@@ -138,19 +149,11 @@ export const diffusion = new CommandGeneric(
               update += 1;
               finished = newFinished;
             } else {
-              await diffMessage.edit(
-                ErrorEmbed(client, message)
-                  .setTitle("🎨 Diffusion!")
-                  .setDescription(`Request failed! Reason: Not Possible`)
-              );
+              await forceEditMessage(diffMessage, ErrorEmbed(client, message).setTitle("🎨 Diffusion!").setDescription(`Request failed! Reason: Not Possible`));
               return;
             }
           } else {
-            await diffMessage.edit(
-              ErrorEmbed(client, message)
-                .setTitle("🎨 Diffusion!")
-                .setDescription(`Request failed! Reason: Faulted`)
-            );
+            await forceEditMessage(diffMessage, ErrorEmbed(client, message).setTitle("🎨 Diffusion!").setDescription(`Request failed! Reason: Not Faulted`));
             return;
           }
         }
@@ -172,6 +175,7 @@ export const diffusion = new CommandGeneric(
               .setTitle("🎨 Diffusion!")
               .setDescription(`Your art is ready!`);
             response.addFields([
+              { name: "Custom Token", value: putReq.data.token ? "Yes" : "No", inline: true},
               { name: "Seed", value: seed, inline: true },
               { name: "ID", value: id, inline: true },
               { name: "Censored", value: censored, inline: true },
@@ -179,23 +183,16 @@ export const diffusion = new CommandGeneric(
               { name: "Worker Name", value: worker_name, inline: true },
               { name: "Model", value: model, inline: true },
               { name: "State", value: state, inline: true },
+              { name: "Prompt", value: putReq.data.prompt ? putReq.data.prompt : "unknown", inline: true}
             ]);
             response.setImage(img);
-            await diffMessage.edit(response);
+            await forceEditMessage(diffMessage, response);
             return;
           }
-          await diffMessage.edit(
-            ErrorEmbed(client, message)
-              .setTitle("🎨 Diffusion!")
-              .setDescription(`Request failed! Reason: No Images!`)
-          );
+          await forceEditMessage(diffMessage, ErrorEmbed(client, message).setTitle("🎨 Diffusion!").setDescription(`Request failed! Reason: No Images!`));
           return;
         }
-        await diffMessage.edit(
-          ErrorEmbed(client, message)
-            .setTitle("🎨 Diffusion!")
-            .setDescription(`Request failed! Reason: No generations`)
-        );
+        await forceEditMessage(diffMessage, ErrorEmbed(client, message).setTitle("🎨 Diffusion!").setDescription(`Request failed! Reason: No Generations!`));
         return;
       }
     })();

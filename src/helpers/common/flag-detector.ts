@@ -29,7 +29,9 @@ export function parseFlags(str) {
 
   if (matches && matches.length > 1) {
     const key = matches[1]; // extract the key from the regex match
-    return { [key]: true }; // create and return an object with the key and value
+    const data = { [key]: true }; // create and return an object with the key and value
+    console.log(data);
+    return data;
   } else {
     return {}; // no match found, return an empty object
   }
