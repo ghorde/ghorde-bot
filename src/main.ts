@@ -29,7 +29,7 @@ export const BotRates = new BotRateLimiter();
 enforceRatelimits();
 
 //temp server whitelist
-const whitelist = ["YEYVOkGj", "wReb5DPl", "ARmn48Jl", "QR4D9gKR"];
+// const whitelist = ["YEYVOkGj", "wReb5DPl", "ARmn48Jl", "QR4D9gKR"];
 
 const client = new Client({ token: TOKEN });
 
@@ -45,16 +45,16 @@ if (aliasUnique(commands)) {
     mainLogger.info(`👂 Recieved message from guild: ${serverId}`);
     const prefix = await getServerPrefix(axios, serverId);
     if (message.content.startsWith(prefix)) {
-      if (!whitelist.includes(message.serverId)) {
-        message.reply(
-          ErrorEmbed(client, message)
-            .setTitle("Closed Alpha Reject!")
-            .setDescription(
-              `This server is not whitelisted!\nIf you would like to be whitelisted, please contact the bot owner.`
-            )
-        );
-        return;
-      } // temp server whitelist (remove when out of alpha)
+      // if (!whitelist.includes(message.serverId)) {
+      //   message.reply(
+      //     ErrorEmbed(client, message)
+      //       .setTitle("Closed Alpha Reject!")
+      //       .setDescription(
+      //         `This server is not whitelisted!\nIf you would like to be whitelisted, please contact the bot owner.`
+      //       )
+      //   );
+      //   return;
+      // } 
       mainLogger.info(`💻 Recieved command from guild: ${serverId}`);
       const [command, ...args] = message.content
         .slice(prefix.length)
